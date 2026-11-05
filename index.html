@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAT Calculator</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-6 sm:p-8 space-y-6 transition-all">
+        
+        <!-- Header -->
+        <div class="text-center space-y-1">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight">VAT Calculator</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400">NTR ELECTRICAL REF & AIRCONDITION SERVICES</p>
+        </div>
+
+        <!-- Input Section -->
+        <div class="space-y-4">
+            <!-- Invoice Amount -->
+            <div class="space-y-1.5">
+                <label for="invoiceAmount" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    Invoice Amount (Gross)
+                </label>
+                <div class="relative rounded-2xl shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 font-semibold text-lg">
+                        ₱
+                    </div>
+                    <input 
+                        type="number" 
+                        id="invoiceAmount" 
+                        step="any"
+                        placeholder="0.00" 
+                        class="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-lg font-semibold transition-all"
+                        autofocus
+                    >
+                </div>
+            </div>
+
+            <!-- Quick Amount Presets -->
+            <div class="grid grid-cols-4 gap-2">
+                <button onclick="setAmount(1000)" class="py-1.5 px-2 text-xs font-medium rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors">₱1,000</button>
+                <button onclick="setAmount(5000)" class="py-1.5 px-2 text-xs font-medium rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors">₱5,000</button>
+                <button onclick="setAmount(10000)" class="py-1.5 px-2 text-xs font-medium rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors">₱10,000</button>
+                <button onclick="clearAmount()" class="py-1.5 px-2 text-xs font-medium rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/50 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-400 transition-colors">Clear</button>
+            </div>
+
+            <!-- Withholding Tax (Form 2307) -->
+            <div class="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-700">
+                <div class="flex items-center justify-between">
+                    <label for="whtAmount" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        Less Withholding Tax (Form 2307)
+                    </label>
+                    <span class="text-[11px] text-slate-400">Optional</span>
+                </div>
+                <div class="relative rounded-2xl shadow-sm">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 font-semibold text-lg">
+                        ₱
+                    </div>
+                    <input 
+                        type="number" 
+                        id="whtAmount" 
+                        step="any"
+                        placeholder="0.00" 
+                        class="w-full pl-9 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-lg font-semibold transition-all"
+                    >
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-slate-100 dark:border-slate-700">
+
+        <!-- Results Section -->
+        <div class="space-y-3">
+            <!-- VAT Sales Card -->
+            <div class="p-3.5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 flex items-center justify-between">
+                <div>
+                    <span class="block text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">VAT Sales</span>
+                    <span class="text-[11px] text-slate-500 dark:text-slate-400">Invoice Amount ÷ 1.12</span>
+                </div>
+                <div id="vatSalesResult" class="text-lg font-bold text-indigo-700 dark:text-indigo-300">
+                    ₱0.00
+                </div>
+            </div>
+
+            <!-- VAT Amount Card -->
+            <div class="p-3.5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/50 flex items-center justify-between">
+                <div>
+                    <span class="block text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Add: 12% VAT</span>
+                    <span class="text-[11px] text-slate-500 dark:text-slate-400">Invoice Amount − VAT Sales</span>
+                </div>
+                <div id="vatAmountResult" class="text-lg font-bold text-emerald-700 dark:text-emerald-300">
+                    ₱0.00
+                </div>
+            </div>
+
+            <!-- Amount Due Card -->
+            <div class="p-4 rounded-2xl bg-slate-900 dark:bg-slate-950 text-white shadow-md flex items-center justify-between">
+                <div>
+                    <span class="block text-xs font-semibold uppercase tracking-wider text-slate-300">Amount Due</span>
+                    <span class="text-[11px] text-slate-400">Invoice Amount − Withholding Tax</span>
+                </div>
+                <div id="netAmountResult" class="text-xl font-bold text-emerald-400">
+                    ₱0.00
+                </div>
+            </div>
+        </div>
+
+        <!-- Formula breakdown explanation toggle -->
+        <details class="text-xs text-slate-500 dark:text-slate-400 cursor-pointer pt-1">
+            <summary class="font-medium hover:text-slate-700 dark:hover:text-slate-200 transition-colors">View Formulas</summary>
+            <div class="mt-2 space-y-1 bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800 text-[11px] leading-relaxed">
+                <p>• <strong>VAT Sales</strong> = Invoice Amount ÷ 1.12</p>
+                <p>• <strong>VAT Amount</strong> = Invoice Amount − VAT Sales</p>
+                <p>• <strong>Amount Due</strong> = Invoice Amount − Withholding Tax (Form 2307)</p>
+            </div>
+        </details>
+
+    </div>
+
+    <!-- Script logic -->
+    <script>
+        const invoiceInput = document.getElementById('invoiceAmount');
+        const whtInput = document.getElementById('whtAmount');
+        const vatSalesResult = document.getElementById('vatSalesResult');
+        const vatAmountResult = document.getElementById('vatAmountResult');
+        const netAmountResult = document.getElementById('netAmountResult');
+
+        // Currency formatter
+        const formatter = new Intl.NumberFormat('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        function calculateVAT() {
+            const invoiceVal = parseFloat(invoiceInput.value) || 0;
+            const whtVal = parseFloat(whtInput.value) || 0;
+
+            if (invoiceVal <= 0) {
+                vatSalesResult.textContent = formatter.format(0);
+                vatAmountResult.textContent = formatter.format(0);
+                netAmountResult.textContent = formatter.format(0);
+                return;
+            }
+
+            // Formula 1: VAT Sales = Invoice Amount / 1.12
+            const vatSales = invoiceVal / 1.12;
+
+            // Formula 2: VAT Amount = Invoice Amount - VAT Sales
+            const vatAmount = invoiceVal - vatSales;
+
+            // Formula 3: Amount Due = Invoice Amount - Withholding Tax
+            const netPayable = invoiceVal - whtVal;
+
+            // Update UI
+            vatSalesResult.textContent = formatter.format(vatSales);
+            vatAmountResult.textContent = formatter.format(vatAmount);
+            netAmountResult.textContent = formatter.format(netPayable);
+        }
+
+        // Preset helpers
+        function setAmount(val) {
+            invoiceInput.value = val;
+            calculateVAT();
+            invoiceInput.focus();
+        }
+
+        function clearAmount() {
+            invoiceInput.value = '';
+            whtInput.value = '';
+            calculateVAT();
+            invoiceInput.focus();
+        }
+
+        // Real-time recalculation listeners
+        invoiceInput.addEventListener('input', calculateVAT);
+        whtInput.addEventListener('input', calculateVAT);
+    </script>
+</body>
+</html>
